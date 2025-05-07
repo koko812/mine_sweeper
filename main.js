@@ -11,7 +11,8 @@ for (let y = 0; y < height; y++) {
     board[y] = []
     for (let x = 0; x < width; x++) {
         board[y][x] = {
-            text: ''
+            text: '',
+            mine: false
         }
     }
 }
@@ -26,6 +27,7 @@ for (let i = 0; i < mineCount; i++) {
     board[y][x].mine = true
 }
 
+const openTargetList = []
 const init = () => {
     const container = document.getElementById('container')
     container.style.width = `${size * width}px`
@@ -51,11 +53,12 @@ const init = () => {
             container.appendChild(div)
             board[y][x].element = div
             div.onpointerdown = (e) => {
-                if(gameOver){
+                if (gameOver) {
                     return
                 }
                 e.preventDefault()
-                open(x, y)
+                openTargetList.push([x, y])
+                open()
             }
         }
     }
@@ -75,43 +78,52 @@ const update = () => {
 }
 
 const open = (x, y) => {
-    const cell = board[y][x]
-    console.log(x,y);
-    // 元から cell が空いている場合の処理を書き忘れていた
-    if (cell.open) {
-        return
-    }
-    cell.open = true
+    while (openTargetList.length) {
+        [x, y] = openTargetList.pop()
+        const cell = board[y][x]
+        //console.log(x, y);
+        // 元から cell が空いている場合の処理を書き忘れていた
+        if (cell.open) {
+            // continue にしないと，空いてるところで勝手にとまる
+            continue
+        }
+        cell.open = true
 
-    // これできれば全部の爆弾を爆発させたいかもしれない
-    if (cell.mine) {
-        cell.text = '💥'
-        gameOver = true
-        update()
-        return
-    }
+        // これできれば全部の爆弾を爆発させたいかもしれない
+        if (cell.mine) {
+            cell.text = '💥'
+            gameOver = true
+            update()
+            continue
+        }
 
-    let counter = 0
-    for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
-            // 書き方が微妙すぎた
-            //const cell = board[y+dy][x+dx]
-            //if(cell.mine){
-            //    counter++
-            //}
-            const cx = x + dx
-            const cy = y + dy
-            if (cx < 0 || cx > width || cy < 0 || cy > height) {
-                continue
-            }
-            if (board[cy][cx].mine) {
-                counter++
+        let counter = 0
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                // 書き方が微妙すぎた
+                //const cell = board[y+dy][x+dx]
+                //if(cell.mine){
+                //    counter++
+                //}
+                const cx = x + dx
+                const cy = y + dy
+                console.log(cx, cy);
+                if (cx < 0 || cx >= width || cy < 0 || cy >= height) {
+                    continue
+                }
+                if (board[cy][cx].mine) {
+                    counter++
+                } else {
+                    openTargetList.push([cx, cy])
+                }
             }
         }
-    }
 
-    if (counter) {
-        cell.text = counter
+        if (counter) {
+            cell.text = counter
+        } else {
+            cell.text = ''
+        }
     }
     update()
 }
