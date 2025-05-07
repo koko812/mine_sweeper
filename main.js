@@ -66,25 +66,46 @@ const init = () => {
             container.appendChild(div)
             board[y][x].element = div
             div.onpointerdown = (e) => {
+                e.preventDefault()
                 if (gameOver) {
                     return
                 }
-                e.preventDefault()
-                openTargetList.push([x, y])
-                open()
+                if (document.getElementById('flag').checked) {
+                    console.log('flag');
+                    flag(x, y)
+                } else {
+                    openTargetList.push([x, y])
+                    open()
+                }
             }
         }
     }
+}
+
+const flag = (x, y) => {
+    const cell = board[y][x]
+    if (cell.open) {
+        return
+    }
+    if (cell.text === '🚩') {
+        cell.text = ''
+    } else {
+        //console.log('flagg!!');
+        cell.text = '🚩'
+    }
+    update()
 }
 
 const update = () => {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const cell = board[y][x]
+            // これが下の if 文の内側に入っていたので，ハタが出てこなかった
+            cell.element.textContent = cell.text
             if (cell.open) {
                 // #000 は黒くなりすぎ，元と同じ色だと，押した感が出てこない
                 // 爆弾の数によって，テキストの色を変えていたのは，昔やったマインスイーパー
-                cell.element.textContent = cell.text
+                console.log(cell.text);
                 cell.element.style.border = '1px solid #aaa'
             }
         }
@@ -158,12 +179,12 @@ window.onload = () => {
     init()
     const startTime = Date.now()
     const tick = () => {
-        if(gameOver){
+        if (gameOver) {
             return
         }
-        const time = Date.now()-startTime
+        const time = Date.now() - startTime
         // 状況設定的に，カウントダウンでもいいかもね，爆弾解除的なシナリオで
-        document.getElementById('timer').textContent = (time/1000).toFixed(2)
+        document.getElementById('timer').textContent = (time / 1000).toFixed(2)
         requestAnimationFrame(tick)
     }
     //tick を使わないと当然 timer は表示されないぞ！
