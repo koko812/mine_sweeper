@@ -1,8 +1,19 @@
+// ゲームクリアの演出として，全面金色になるとかいう演出とかいいかも
+// 左上から順番に塗りつぶしていくみたいなアニメーションがあればより面白いかも
+// 多分 transition じゃ対応できないので，そこは setTimeout するしかないよね
+// transition で対応できるのはアフィン変換だけ（のはず
+
+// できれば，最初一発目は爆発しないようにしたい
+// なんにせよ，もうちょっとオリジナル要素をつけたいように思う（簡単に実装できたので）；
+
 // まず，論理ボードを作ります
-const width = 15
-const height = 15
+const width = 10
+const height = 10
 const size = 30
-const mineCount = 20
+// これね，普通にボードちっちゃくして mine 増やせばそれっぽくなるって，
+// なぜ気づかなかったのだ
+const mineCount = 2
+let leftCount = 0
 
 let gameOver = false
 
@@ -10,6 +21,7 @@ const board = []
 for (let y = 0; y < height; y++) {
     board[y] = []
     for (let x = 0; x < width; x++) {
+        leftCount++
         board[y][x] = {
             text: '',
             mine: false
@@ -25,6 +37,7 @@ for (let i = 0; i < mineCount; i++) {
         y = Math.trunc(Math.random() * height)
     } while (board[y][x].mine)
     board[y][x].mine = true
+    leftCount--
 }
 
 const openTargetList = []
@@ -70,6 +83,7 @@ const update = () => {
             const cell = board[y][x]
             if (cell.open) {
                 // #000 は黒くなりすぎ，元と同じ色だと，押した感が出てこない
+                // 爆弾の数によって，テキストの色を変えていたのは，昔やったマインスイーパー
                 cell.element.textContent = cell.text
                 cell.element.style.border = '1px solid #aaa'
             }
@@ -90,6 +104,7 @@ const open = () => {
             continue
         }
         cell.open = true
+        leftCount--
 
         // これできれば全部の爆弾を爆発させたいかもしれない
         if (cell.mine) {
@@ -121,7 +136,7 @@ const open = () => {
                     counter++
                 }
                 // 二重でターゲットリストを作る感じが，自分には閃かなかった
-                target.push([cx,cy])
+                target.push([cx, cy])
             }
         }
 
@@ -130,6 +145,10 @@ const open = () => {
         } else {
             cell.text = ''
             openTargetList.push(...target)
+        }
+        // マインスイーパーはターン制ゲームなので，while ループでリアルタイムでは更新しないと言うわけ
+        if (!leftCount) {
+            gameOver = true
         }
     }
     update()

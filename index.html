@@ -15,6 +15,12 @@
     <!-- どちらで宣言しても同じものは作れるはずなんだが-->
     <div id="container" style="position: relative;"></div>
     <div style="font-size: 30px;">
+        <!-- name='action' はなぜ必要なんだろうか-->
+        <!-- ラジオボタンの input を js 側でどう扱うのかをきちんと覚えておこう-->
+        <input type="radio" id="picker" name="action" checked>
+        <label for="piker">⛏️</label>
+        <input type="radio" id="flag" name="action">
+        <label for="piker">🚩</label> /
         <span id="timer"></span>
     </div>
 
