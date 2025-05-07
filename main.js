@@ -4,6 +4,8 @@ const height = 10
 const size = 30
 const mineCount = 5
 
+let gameOver = false
+
 const board = []
 for (let y = 0; y < height; y++) {
     board[y] = []
@@ -49,6 +51,9 @@ const init = () => {
             container.appendChild(div)
             board[y][x].element = div
             div.onpointerdown = (e) => {
+                if(gameOver){
+                    return
+                }
                 e.preventDefault()
                 open(x, y)
             }
@@ -81,6 +86,7 @@ const open = (x, y) => {
     // これできれば全部の爆弾を爆発させたいかもしれない
     if (cell.mine) {
         cell.text = '💥'
+        gameOver = true
         update()
         return
     }
