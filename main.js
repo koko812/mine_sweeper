@@ -11,7 +11,7 @@ const width = 10
 const height = 10
 const size = 30
 // これね，普通にボードちっちゃくして mine 増やせばそれっぽくなるって，
-// なぜ気づかなかったのだ
+// なぜ気づかなかったのだ，一気にマスを開ける時の動作確認しようとした時の話
 const mineCount = 2
 let leftCount = 0
 
@@ -156,4 +156,16 @@ const open = () => {
 
 window.onload = () => {
     init()
+    const startTime = Date.now()
+    const tick = () => {
+        if(gameOver){
+            return
+        }
+        const time = Date.now()-startTime
+        // 状況設定的に，カウントダウンでもいいかもね，爆弾解除的なシナリオで
+        document.getElementById('timer').textContent = (time/1000).toFixed(2)
+        requestAnimationFrame(tick)
+    }
+    //tick を使わないと当然 timer は表示されないぞ！
+    tick()
 }
