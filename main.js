@@ -1,8 +1,8 @@
 // まず，論理ボードを作ります
-const width = 10
-const height = 10
+const width = 15
+const height = 15
 const size = 30
-const mineCount = 5
+const mineCount = 20
 
 let gameOver = false
 
@@ -77,7 +77,9 @@ const update = () => {
     }
 }
 
-const open = (x, y) => {
+// 周りに地雷があるものも open していくと，全部開いてしまう
+// ここの処理が，完全に理解できている感じがしなくて怖い
+const open = () => {
     while (openTargetList.length) {
         [x, y] = openTargetList.pop()
         const cell = board[y][x]
@@ -98,6 +100,8 @@ const open = (x, y) => {
         }
 
         let counter = 0
+
+        const target = []
         for (let dy = -1; dy <= 1; dy++) {
             for (let dx = -1; dx <= 1; dx++) {
                 // 書き方が微妙すぎた
@@ -108,14 +112,16 @@ const open = (x, y) => {
                 const cx = x + dx
                 const cy = y + dy
                 console.log(cx, cy);
+                // >= にしないと，配列オーバーするので注意
+                // 番兵を使わない場合の実装ってことだな
                 if (cx < 0 || cx >= width || cy < 0 || cy >= height) {
                     continue
                 }
                 if (board[cy][cx].mine) {
                     counter++
-                } else {
-                    openTargetList.push([cx, cy])
                 }
+                // 二重でターゲットリストを作る感じが，自分には閃かなかった
+                target.push([cx,cy])
             }
         }
 
@@ -123,6 +129,7 @@ const open = (x, y) => {
             cell.text = counter
         } else {
             cell.text = ''
+            openTargetList.push(...target)
         }
     }
     update()
