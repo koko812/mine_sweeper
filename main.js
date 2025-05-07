@@ -12,7 +12,7 @@ const height = 10
 const size = 30
 // これね，普通にボードちっちゃくして mine 増やせばそれっぽくなるって，
 // なぜ気づかなかったのだ，一気にマスを開ける時の動作確認しようとした時の話
-const mineCount = 2
+const mineCount = 8
 let leftCount = 0
 
 let gameOver = false
