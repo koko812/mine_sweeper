@@ -82,6 +82,9 @@ const init = () => {
     }
 }
 
+// さらっとかけた
+// ただ，押されてないボタン上にテキストを設定できるようにしてなかったので，
+// そこの修正（一行だけ）は必要だった
 const flag = (x, y) => {
     const cell = board[y][x]
     if (cell.open) {
@@ -94,6 +97,18 @@ const flag = (x, y) => {
         cell.text = '🚩'
     }
     update()
+}
+
+// さらっとかけた
+const showAllMine = () => {
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const cell = board[y][x]
+            if (cell.mine) {
+                cell.text = '💣'
+            }
+        }
+    }
 }
 
 const update = () => {
@@ -131,6 +146,7 @@ const open = () => {
         if (cell.mine) {
             cell.text = '💥'
             gameOver = true
+            showAllMine()
             update()
             continue
         }
@@ -169,6 +185,7 @@ const open = () => {
         }
         // マインスイーパーはターン制ゲームなので，while ループでリアルタイムでは更新しないと言うわけ
         if (!leftCount) {
+            showAllMine()
             gameOver = true
         }
     }
